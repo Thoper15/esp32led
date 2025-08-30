@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Led</title>
+    <title>Control LED Firebase</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,76 +30,56 @@
             color: white;
         }
     </style>
- <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
 </head>
 
 <body>
-    <h1>Control del LED </h1>
-    <div id="control">
-        <p>Estado actual: <span id="estado">Desconocido</span></p>
-        <button id="btnOn" class="on">Encender</button>
-        <button id="btnOff" class="off">Apagar</button>
-    </div>
-  <script>
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-     const firebaseConfig = {
-    apiKey: "AIzaSyCiKBZgL7G5I26sYy4-T0gibOmFLIDm9iI",
-    authDomain: "esp32-79009.firebaseapp.com",
-    databaseURL: "https://esp32-79009-default-rtdb.firebaseio.com",
-    projectId: "esp32-79009",
-    storageBucket: "esp32-79009.firebasestorage.app",
-    messagingSenderId: "216032685920",
-    appId: "1:216032685920:web:503a57af3107b3826ef805"
-  };
+    <h1>Control del LED con Firebase</h1>
+    <p>Estado actual: <span id="estado">Desconocido</span></p>
+    <button id="btnOn" class="on">Encender</button>
+    <button id="btnOff" class="off">Apagar</button>
 
-    // Inicializar Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+    <!-- SDK Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
 
+    <script>
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiKBZgL7G5I26sYy4-T0gibOmFLIDm9iI",
+            authDomain: "esp32-79009.firebaseapp.com",
+            databaseURL: "https://esp32-79009-default-rtdb.firebaseio.com",
+            projectId: "esp32-79009",
+            storageBucket: "esp32-79009.firebasestorage.app",
+            messagingSenderId: "216032685920",
+            appId: "1:216032685920:web:503a57af3107b3826ef805"
+        };
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
+        const estadoTexto = document.getElementById("estado");
+        const btnOn = document.getElementById("btnOn");
+        const btnOff = document.getElementById("btnOff");
 
-    const estadoTexto = document.getElementById("estado");
-    const btnOn = document.getElementById("btnOn");
-    const btnOff = document.getElementById("btnOff");
-
-    // Iniciar sesión con email y password
-    document.getElementById("btnLogin").addEventListener("click", () => {
-      const email = "dani@gmail.com"
-      const password = "dani123456"
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          loginStatus.textContent = "Sesión iniciada";
-          loginDiv.style.display = "none";
-          controlDiv.style.display = "block";
-
-          // Escuchar cambios en /ledStatus
-          const ledRef = db.ref("ledStatus");
-          ledRef.on("value", (snapshot) => {
+        // Escuchar cambios en /led
+        const ledRef = ref(db, "led");
+        onValue(ledRef, (snapshot) => {
             const estado = snapshot.val();
-            estadoTexto.textContent = estado ? "ENCENDIDO" : "APAGADO";
-          });
+            estadoTexto.textContent = estado ? "ENCENDIDO" : "APAGADO"; 
+        }); 
 
-          // Botón ENCENDER
-          btnOn.addEventListener("click", () => {
-            db.ref("ledStatus").set(true);
-          });
-
-          // Botón APAGAR
-          btnOff.addEventListener("click", () => {
-            db.ref("ledStatus").set(false);
-          });
-        })
-        .catch((error) => {
-          loginStatus.textContent = "Error: " + error.message;
+        // Botón ENCENDER
+        btnOn.addEventListener("click", () => {
+            set(ref(db, "led"), true);
         });
-    });
-  </script>
+
+        // Botón APAGAR
+        btnOff.addEventListener("click", () => {
+            set(ref(db, "led"), false);
+        });
+    </script>
 </body>
 
-
 </html>
+
 
