@@ -31,22 +31,20 @@
             color: white;
         }
     </style>
-      <h1>Control del LED </h1>
-
-  <div id="control">
-    <p>Estado actual: <span id="estado">Desconocido</span></p>
-    <button id="btnOn" class="on">Encender</button>
-    <button id="btnOff" class="off">Apagar</button>
-  </div>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+</head>
 
+<body>
+    <h1>Control del LED </h1>
+    <div id="control">
+        <p>Estado actual: <span id="estado">Desconocido</span></p>
+        <button id="btnOn" class="on">Encender</button>
+        <button id="btnOff" class="off">Apagar</button>
+    </div>
   <script>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-    // 🔧 Configuración de Firebase (copiar desde tu consola Firebase)
      const firebaseConfig = {
     apiKey: "AIzaSyCiKBZgL7G5I26sYy4-T0gibOmFLIDm9iI",
     authDomain: "esp32-79009.firebaseapp.com",
@@ -101,11 +99,8 @@
         });
     });
   </script>
-</head>
-
-<body>
-
 </body>
 
 
 </html>
+
