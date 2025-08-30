@@ -39,7 +39,7 @@
     const btnOn = document.getElementById("btnOn");
     const btnOff = document.getElementById("btnOff");
 
-    const ledRef = ref(db, "ledStatus");
+    const ledRef = ref(db, "led");
 
     // Escucha cambios en tiempo real
     onValue(ledRef, (snapshot) => {
@@ -52,6 +52,7 @@
   </script>
 </body>
 </html>
+
 
 
 
