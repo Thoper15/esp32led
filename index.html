@@ -1,56 +1,95 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="UTF-8">
-  <title>Control LED</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    button { padding: 15px 30px; font-size: 18px; margin: 10px; border: none; border-radius: 10px; cursor: pointer; }
-    .on { background-color: green; color: white; }
-    .off { background-color: red; color: white; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Control LED</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .on {
+            background-color: green;
+            color: white;
+        }
+
+        .off {
+            background-color: red;
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Control del LED con Firebase v12</h1>
-  <p>Estado actual: <span id="estado">Desconocido</span></p>
-  <button id="btnOn" class="on">Encender</button>
-  <button id="btnOff" class="off">Apagar</button>
+    <h1>Control del LED con Firebase v12</h1>
+    <p>Estado actual: <span id="estado">Desconocido</span></p>
+    <button id="btnOn" class="on">Encender</button>
+    <button id="btnOff" class="off">Apagar</button>
 
-  <!-- SDK Firebase v12 desde CDN -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js';
-    import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js';
+    <!-- SDK Firebase v12 desde CDN -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js';
+        import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js';
 
-    // Tu configuración de Firebase (copiada desde la consola)
-   const firebaseConfig = {
-    apiKey: "AIzaSyCiKBZgL7G5I26sYy4-T0gibOmFLIDm9iI",
-    authDomain: "esp32-79009.firebaseapp.com",
-    databaseURL: "https://esp32-79009-default-rtdb.firebaseio.com",
-    projectId: "esp32-79009",
-    storageBucket: "esp32-79009.firebasestorage.app",
-    messagingSenderId: "216032685920",
-    appId: "1:216032685920:web:503a57af3107b3826ef805"
-  };
-    // Inicializa Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+        // Tu configuración de Firebase (copiada desde la consola)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiKBZgL7G5I26sYy4-T0gibOmFLIDm9iI",
+            authDomain: "esp32-79009.firebaseapp.com",
+            databaseURL: "https://esp32-79009-default-rtdb.firebaseio.com",
+            projectId: "esp32-79009",
+            storageBucket: "esp32-79009.firebasestorage.app",
+            messagingSenderId: "216032685920",
+            appId: "1:216032685920:web:503a57af3107b3826ef805"
+        };
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
 
-    const estadoTexto = document.getElementById("estado");
-    const btnOn = document.getElementById("btnOn");
-    const btnOff = document.getElementById("btnOff");
+        const estadoTexto = document.getElementById("estado");
+        const btnOn = document.getElementById("btnOn");
+        const btnOff = document.getElementById("btnOff");
 
-    const ledRef = ref(db, "led");
+        const ledRef = ref(db, "led");
 
-    // Escucha cambios en tiempo real
-    onValue(ledRef, (snapshot) => {
-      const estado = snapshot.val();
-      estadoTexto.textContent = estado ? "ENCENDIDO" : "APAGADO";
-    });
+        const EMAIL = "dani@gmail.com";
+        const PASSWORD = "dani123456";
 
-    btnOn.addEventListener("click", () => set(ledRef, true));
-    btnOff.addEventListener("click", () => set(ledRef, false));
-  </script>
+        // Login automático
+        signInWithEmailAndPassword(auth, EMAIL, PASSWORD)
+            .then((userCredential) => {
+                console.log("Usuario autenticado:", userCredential.user.email);
+                console.log("Sesión iniciada automáticamente");
+
+                // Escuchar cambios en la DB
+                onValue(ledRef, (snapshot) => {
+                    const estado = snapshot.val();
+                    estadoTexto.textContent = estado ? "ENCENDIDO" : "APAGADO";
+                });
+
+                // Botones para controlar el LED
+                btnOn.onclick = () => set(ledRef, true);
+                btnOff.onclick = () => set(ledRef, false);
+            })
+            .catch((error) => {
+                console.error("Error login:", error.message);
+            });
+    </script>
 </body>
+
 </html>
 
 
